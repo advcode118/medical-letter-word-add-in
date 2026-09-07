@@ -41,21 +41,43 @@
     </p>
 
     <p class="note">
+      This is a custom Word add-in, not an Office Store app. Do
+      <strong>not</strong> paste this website into Word’s <strong>Catalog Url</strong> box. That box needs a
+      shared folder path such as <code>\\YOUR-PC\MedicalLetter</code>.
+      <br /><br />
       Install file:
       <a href="manifest.xml"><strong>Download manifest.xml</strong></a>
     </p>
 
     <h2>Install in Word (once)</h2>
     <ol>
-      <li>Download <a href="manifest.xml">manifest.xml</a> from this page.</li>
-      <li>Open Microsoft Word on Windows.</li>
-      <li>Go to <strong>Insert → Add-ins → My Add-ins</strong>.</li>
-      <li>Choose <strong>Upload My Add-in</strong> (sometimes under <strong>Shared Folder</strong> / the <strong>…</strong> menu) and select the downloaded <code>manifest.xml</code>.</li>
-      <li>On the <strong>Home</strong> tab, choose <strong>Medical Letter</strong> to open the task pane.</li>
+      <li>
+        Download <a href="manifest.xml">manifest.xml</a> (right-click → Save link as).
+      </li>
+      <li>
+        Create a folder such as <code>C:\MedicalLetter</code> and put <code>manifest.xml</code> in it.
+      </li>
+      <li>
+        Right-click that folder → <strong>Properties → Sharing → Share</strong>. Share it with yourself.
+        Copy the network path, which looks like <code>\\LAPTOP-NAME\MedicalLetter</code> (it must start with
+        <code>\\</code>).
+      </li>
+      <li>
+        In Word: <strong>File → Options → Trust Center → Trust Center Settings → Trusted Add-in Catalogs</strong>.
+      </li>
+      <li>
+        Paste the <code>\\LAPTOP-NAME\MedicalLetter</code> path into <strong>Catalog Url</strong>, click
+        <strong>Add catalog</strong>, then tick <strong>Show in Menu</strong> on that row. Click <strong>OK</strong>.
+      </li>
+      <li>Quit Word completely and open it again.</li>
+      <li>
+        <strong>Home → Add-ins → Advanced</strong> (or <strong>Insert → My Add-ins</strong>), open the
+        <strong>SHARED FOLDER</strong> tab, select <strong>Medical Letter</strong>, click <strong>Add</strong>.
+      </li>
     </ol>
     <p>
-      You need internet the first time Word loads the sidebar (the files are served from this site). Letter
-      content and patient details stay in Word on your computer.
+      You need internet when the sidebar loads (the UI is served from this site). Letter content and patient
+      details stay in Word on your computer.
     </p>
 
     <h2>Write a letter</h2>

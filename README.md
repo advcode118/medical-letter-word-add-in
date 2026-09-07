@@ -13,16 +13,17 @@ OFFICE.JS  (src/word/documentService.ts)
     ↕
 TASK PANE  (src/taskpane)
     ↕
-LETTER STATE  (in-memory only)
+LETTER STATE  (in-memory only)     LIBRARY  (localStorage per user)
+    ↕                                    ↕
+HIERARCHICAL MULTI-SELECT          Customise tab (add / edit / delete)
     ↕
-HIERARCHICAL MULTI-SELECT  (src/components/HierarchicalMultiSelect.tsx)
-    ↕
-DATA FILES  (src/data/*.json)
+DEFAULT DATA FILES  (src/data/*.json)  — starting lists only
 ```
 
 - **Manifest:** [`manifest.xml`](manifest.xml) — Word task pane, `ReadWriteDocument`
 - **UI:** React + TypeScript + Fluent UI, sized for a narrow Word sidebar
-- **Data:** local JSON catalogs; no backend, no analytics, no external clinical APIs
+- **Data:** demo JSON catalogs as a starting point; each person can add, edit, and delete sections and reusable text in the **Customise** tab
+- **Sharing:** Export / import a `medical-letter-library.json` file. No backend. Custom lists stay on that computer until exported
 - **Patient data:** kept in task-pane memory for the Word session only. Reset/clear does not change the document unless you populate or insert again.
 
 ### How the add-in talks to Word
@@ -56,7 +57,7 @@ DATA FILES  (src/data/*.json)
    npx office-addin-dev-certs install --machine
    ```
 
-3. `npm start` starts the HTTPS webpack server on port 3000, registers [`manifest.xml`](manifest.xml), and launches Word.
+3. `npm start` starts the HTTPS webpack server (port in `package.json`, currently 3010), registers [`manifest.xml`](manifest.xml), and launches Word.
 
 4. In Word, open or create a document. On the **Home** tab choose **Medical Letter** to open the task pane.
 
@@ -101,58 +102,31 @@ Useful scripts:
 
 Empty fields are **not** written into the document. Those placeholders are left in place and reported in the task pane.
 
-## Add a diagnosis
+## Customise lists for each person
 
-Edit [`src/data/diagnoses.json`](src/data/diagnoses.json) only. Do not change the UI.
+Open the **Customise** tab in the task pane. Each user of the add-in can:
 
-```json
-{
-  "id": "bronchiectasis",
-  "name": "Bronchiectasis"
-}
-```
+- Add, rename, hide, reorder, or delete sections (lists, free text, or reusable paragraphs)
+- Add, edit, or delete groups and items (for example a new diagnosis)
+- Add reusable text blocks and insert them at the cursor
+- Insert the matching `{{PLACEHOLDER}}` into the Word document while building a template
+- **Export library** to a JSON file and give that file to a colleague
+- **Import library** to load someone else’s lists
+- **Restore demo lists** to go back to the bundled demonstration data
 
-Add that object to the `items` array of the right category. Optionally link standard-text IDs (not inserted automatically when the diagnosis is selected):
+Custom libraries are stored in this computer’s browser/Word storage (`localStorage`). They are not uploaded anywhere. Patient letter details are not included in the export.
 
-```json
-{
-  "id": "bronchiectasis",
-  "name": "Bronchiectasis",
-  "standardText": ["asthma_advice"]
-}
-```
+## Add a diagnosis (in the add-in)
 
-Reload the add-in (dev server rebuilds on save).
+1. Open **Customise**.
+2. Choose **Diagnosis** → **Edit**.
+3. Add it under the right group, or add a new group first.
 
-## Add a category
+Developers can still seed the default demo lists in [`src/data/diagnoses.json`](src/data/diagnoses.json). Once someone has customised their library, those demo files are only used again after **Restore demo lists**.
 
-In the same JSON file, add a category object:
+## Add a category or reusable paragraph
 
-```json
-{
-  "id": "haematology",
-  "name": "Haematology",
-  "items": [
-    { "id": "anaemia", "name": "Anaemia" }
-  ]
-}
-```
-
-The hierarchical selector renders any category/item tree in this shape. The same applies to [`src/data/medications.json`](src/data/medications.json), [`investigations.json`](src/data/investigations.json), and [`treatments.json`](src/data/treatments.json).
-
-## Add standard text
-
-Edit [`src/data/standardText.json`](src/data/standardText.json):
-
-```json
-{
-  "id": "inhaler_advice",
-  "name": "Inhaler advice",
-  "text": "Inhaler technique was discussed."
-}
-```
-
-To associate it with a diagnosis, put that `id` in the diagnosis `standardText` array. Selecting the diagnosis does **not** insert the paragraph. It only offers a suggested-text button.
+Use **Customise**: add a group inside a list section, or add a **Reusable paragraphs** section and paste the paragraph text there.
 
 ## Privacy
 
@@ -181,5 +155,6 @@ To associate it with a diagnosis, put that `id` in the diagnosis `standardText` 
 | `src/data/` | Editable JSON catalogs |
 | `src/word/documentService.ts` | Office.js insert / replace / detect |
 | `src/word/placeholders.ts` | Placeholder tokens and value mapping |
-| `src/state/useLetterState.ts` | In-memory form state |
+| `src/state/useLetterState.ts` | In-memory letter form state |
+| `src/state/useWorkspace.ts` | Per-user library (sections, lists, reusable text) |
 | `templates/` | Placeholder list and sample letter |

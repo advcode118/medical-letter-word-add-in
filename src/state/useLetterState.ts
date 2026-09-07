@@ -2,23 +2,22 @@ import { useState } from "react";
 import { SelectedItem } from "../types/catalog";
 import { todayIsoDate } from "../utils/dates";
 
-export interface LetterState {
+export interface PatientDetails {
   patientName: string;
   dateOfBirth: string;
   patientId: string;
   letterDate: string;
   clinicianName: string;
   clinicianRole: string;
-  diagnoses: SelectedItem[];
-  medications: SelectedItem[];
-  investigations: SelectedItem[];
-  treatments: SelectedItem[];
-  assessment: string;
-  plan: string;
-  followUp: string;
 }
 
-export function createInitialLetterState(): LetterState {
+export interface LetterState {
+  patient: PatientDetails;
+  catalogSelections: Record<string, SelectedItem[]>;
+  textValues: Record<string, string>;
+}
+
+export function createInitialPatient(): PatientDetails {
   return {
     patientName: "",
     dateOfBirth: "",
@@ -26,29 +25,46 @@ export function createInitialLetterState(): LetterState {
     letterDate: todayIsoDate(),
     clinicianName: "",
     clinicianRole: "",
-    diagnoses: [],
-    medications: [],
-    investigations: [],
-    treatments: [],
-    assessment: "",
-    plan: "",
-    followUp: "",
+  };
+}
+
+export function createInitialLetterState(): LetterState {
+  return {
+    patient: createInitialPatient(),
+    catalogSelections: {},
+    textValues: {},
   };
 }
 
 export function useLetterState() {
   const [state, setState] = useState<LetterState>(createInitialLetterState);
 
+  const patchPatient = (patch: Partial<PatientDetails>) => {
+    setState((current) => ({
+      ...current,
+      patient: { ...current.patient, ...patch },
+    }));
+  };
+
+  const setCatalogSelection = (sectionId: string, items: SelectedItem[]) => {
+    setState((current) => ({
+      ...current,
+      catalogSelections: { ...current.catalogSelections, [sectionId]: items },
+    }));
+  };
+
+  const setTextValue = (sectionId: string, value: string) => {
+    setState((current) => ({
+      ...current,
+      textValues: { ...current.textValues, [sectionId]: value },
+    }));
+  };
+
   const clearSelections = () => {
     setState((current) => ({
       ...current,
-      diagnoses: [],
-      medications: [],
-      investigations: [],
-      treatments: [],
-      assessment: "",
-      plan: "",
-      followUp: "",
+      catalogSelections: {},
+      textValues: {},
     }));
   };
 
@@ -56,5 +72,12 @@ export function useLetterState() {
     setState(createInitialLetterState());
   };
 
-  return { state, setState, clearSelections, resetForm };
+  return {
+    state,
+    patchPatient,
+    setCatalogSelection,
+    setTextValue,
+    clearSelections,
+    resetForm,
+  };
 }

@@ -9,29 +9,21 @@ import {
   MessageBar,
   MessageBarBody,
   MessageBarTitle,
+  Tab,
+  TabList,
   Text,
   makeStyles,
   tokens,
 } from "@fluentui/react-components";
-import diagnoses from "../../data/diagnoses.json";
-import medications from "../../data/medications.json";
-import investigations from "../../data/investigations.json";
-import treatments from "../../data/treatments.json";
-import standardText from "../../data/standardText.json";
 import { Catalog } from "../../types/catalog";
+import { WorkspaceSection } from "../../types/workspace";
 import { useLetterState } from "../../state/useLetterState";
-import { joinSelectedNames, getSuggestedStandardText } from "../../utils/catalog";
+import { useWorkspace } from "../../state/useWorkspace";
+import { getSuggestedStandardText, joinSelectedNames } from "../../utils/catalog";
 import { buildPlaceholderValues } from "../../word/placeholders";
 import {
   detectPlaceholders,
   insertAtCursor,
-  insertAssessment,
-  insertDiagnosis,
-  insertFollowUp,
-  insertInvestigation,
-  insertMedication,
-  insertPlan,
-  insertTreatment,
   isWordHost,
   populateLetter,
   PlaceholderDetection,
@@ -43,12 +35,7 @@ import TextSection from "../../components/TextSection";
 import StandardTextPanel from "../../components/StandardTextPanel";
 import PreviewPanel from "../../components/PreviewPanel";
 import PlaceholderStatus from "../../components/PlaceholderStatus";
-
-const diagnosisCatalog = diagnoses as Catalog;
-const medicationCatalog = medications as Catalog;
-const investigationCatalog = investigations as Catalog;
-const treatmentCatalog = treatments as Catalog;
-const standardTextCatalog = standardText as Catalog;
+import CustomisePanel from "../../components/CustomisePanel";
 
 interface AppProps {
   title: string;
@@ -76,6 +63,7 @@ const useStyles = makeStyles({
   },
   subtitle: {
     color: tokens.colorNeutralForeground3,
+    marginBottom: "8px",
   },
   scroll: {
     flexGrow: 1,
@@ -108,25 +96,33 @@ const useStyles = makeStyles({
   hostBanner: {
     margin: "8px 12px 0 12px",
   },
+  token: {
+    color: tokens.colorNeutralForeground3,
+    marginBottom: "8px",
+  },
 });
+
+function mergedStandardText(sections: WorkspaceSection[]): Catalog {
+  return {
+    categories: sections
+      .filter((section) => section.kind === "standardText")
+      .flatMap((section) => section.catalog.categories),
+  };
+}
 
 const App: React.FC<AppProps> = (props: AppProps) => {
   const styles = useStyles();
-  const { state, setState, clearSelections, resetForm } = useLetterState();
+  const { workspace, setWorkspace, resetDefaults, exportLibrary, importLibrary } = useWorkspace();
+  const { state, patchPatient, setCatalogSelection, setTextValue, clearSelections, resetForm } =
+    useLetterState();
+  const [mode, setMode] = useState<"letter" | "customise">("letter");
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
   const [detections, setDetections] = useState<PlaceholderDetection[] | null>(null);
   const wordHost = isWordHost();
 
-  const patchState = (patch: Partial<typeof state>) => {
-    setState((current) => ({ ...current, ...patch }));
-  };
-
   const showError = (error: unknown, fallback: string) => {
-    const message =
-      error instanceof WordIntegrationError
-        ? error.message
-        : fallback;
+    const message = error instanceof WordIntegrationError ? error.message : fallback;
     setNotice({ intent: "error", title: "Word document", message });
   };
 
@@ -143,8 +139,17 @@ const App: React.FC<AppProps> = (props: AppProps) => {
     }
   };
 
-  const suggestedText = getSuggestedStandardText(state.diagnoses, diagnosisCatalog, standardTextCatalog);
-  const placeholderValues = buildPlaceholderValues(state);
+  const standardTextCatalog = mergedStandardText(workspace.sections);
+  const diagnosisSection = workspace.sections.find((section) => section.id === "diagnosis");
+  const suggestedText = diagnosisSection
+    ? getSuggestedStandardText(
+        state.catalogSelections[diagnosisSection.id] ?? [],
+        diagnosisSection.catalog,
+        standardTextCatalog
+      )
+    : [];
+  const placeholderValues = buildPlaceholderValues(workspace, state);
+  const visibleSections = workspace.sections.filter((section) => section.enabled);
 
   const onPopulate = async () => {
     setBusy(true);
@@ -183,6 +188,77 @@ const App: React.FC<AppProps> = (props: AppProps) => {
     }
   };
 
+  const renderSection = (section: WorkspaceSection) => {
+    if (section.kind === "patient") {
+      return <PatientFields patient={state.patient} onChange={patchPatient} />;
+    }
+    if (section.kind === "catalog") {
+      const selected = state.catalogSelections[section.id] ?? [];
+      return (
+        <>
+          {section.placeholder ? (
+            <Text className={styles.token} size={100} block>
+              Placeholder {section.placeholder}
+            </Text>
+          ) : null}
+          <CatalogSection
+            data={section.catalog}
+            selected={selected}
+            onChange={(items) => setCatalogSelection(section.id, items)}
+            searchPlaceholder={`Search ${section.name.toLowerCase()}...`}
+            insertLabel={`Insert ${section.name.toLowerCase()}`}
+            ariaLabel={`${section.name} selector`}
+            insertDisabled={selected.length === 0 || busy}
+            onInsert={() =>
+              runWordAction(
+                () => insertAtCursor(joinSelectedNames(selected)),
+                `Inserted ${section.name.toLowerCase()} at the cursor.`
+              )
+            }
+          />
+          {section.id === "diagnosis" ? (
+            <StandardTextPanel
+              suggested={suggestedText}
+              onInsert={(text) =>
+                runWordAction(() => insertAtCursor(text), "Inserted standard text at the cursor.")
+              }
+            />
+          ) : null}
+        </>
+      );
+    }
+    if (section.kind === "standardText") {
+      return (
+        <StandardTextPanel
+          catalog={section.catalog}
+          onInsert={(text) =>
+            runWordAction(() => insertAtCursor(text), "Inserted standard text at the cursor.")
+          }
+        />
+      );
+    }
+    const value = state.textValues[section.id] ?? "";
+    return (
+      <>
+        {section.placeholder ? (
+          <Text className={styles.token} size={100} block>
+            Placeholder {section.placeholder}
+          </Text>
+        ) : null}
+        <TextSection
+          label={section.name}
+          value={value}
+          onChange={(next) => setTextValue(section.id, next)}
+          placeholder={section.name}
+          insertLabel={`Insert ${section.name.toLowerCase()}`}
+          onInsert={() =>
+            runWordAction(() => insertAtCursor(value), `Inserted ${section.name.toLowerCase()} at the cursor.`)
+          }
+        />
+      </>
+    );
+  };
+
   return (
     <div className={styles.root}>
       <header className={styles.header}>
@@ -190,8 +266,15 @@ const App: React.FC<AppProps> = (props: AppProps) => {
           {props.title}
         </Text>
         <Text className={styles.subtitle} size={200} block>
-          Fill the letter in Word from this task pane
+          Fill the letter, or customise the lists for this user
         </Text>
+        <TabList
+          selectedValue={mode}
+          onTabSelect={(_event, data) => setMode(data.value as "letter" | "customise")}
+        >
+          <Tab value="letter">Letter</Tab>
+          <Tab value="customise">Customise</Tab>
+        </TabList>
       </header>
 
       {!wordHost ? (
@@ -199,7 +282,7 @@ const App: React.FC<AppProps> = (props: AppProps) => {
           <MessageBar intent="info">
             <MessageBarBody>
               <MessageBarTitle>Open in Microsoft Word</MessageBarTitle>
-              Insert and populate actions need the live Word document. You can still review the form here.
+              Insert and populate actions need the live Word document. You can still review and edit lists here.
             </MessageBarBody>
           </MessageBar>
         </div>
@@ -217,187 +300,60 @@ const App: React.FC<AppProps> = (props: AppProps) => {
           </div>
         ) : null}
 
-        <Accordion multiple collapsible defaultOpenItems={["patient", "diagnosis", "preview"]}>
-          <AccordionItem value="patient">
-            <AccordionHeader>Patient</AccordionHeader>
-            <AccordionPanel>
-              <PatientFields state={state} onChange={patchState} />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="diagnosis">
-            <AccordionHeader>Diagnosis</AccordionHeader>
-            <AccordionPanel>
-              <CatalogSection
-                data={diagnosisCatalog}
-                selected={state.diagnoses}
-                onChange={(diagnoses) => patchState({ diagnoses })}
-                searchPlaceholder="Search diagnoses..."
-                insertLabel="Insert diagnosis"
-                ariaLabel="Diagnosis selector"
-                insertDisabled={state.diagnoses.length === 0 || busy}
-                onInsert={() =>
-                  runWordAction(
-                    () => insertDiagnosis(joinSelectedNames(state.diagnoses)),
-                    "Inserted the selected diagnoses at the cursor."
-                  )
-                }
-              />
-              <StandardTextPanel
-                suggested={suggestedText}
-                onInsert={(text) =>
-                  runWordAction(() => insertAtCursor(text), "Inserted standard text at the cursor.")
-                }
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="medication">
-            <AccordionHeader>Medication</AccordionHeader>
-            <AccordionPanel>
-              <CatalogSection
-                data={medicationCatalog}
-                selected={state.medications}
-                onChange={(medications) => patchState({ medications })}
-                searchPlaceholder="Search medications..."
-                insertLabel="Insert medication"
-                ariaLabel="Medication selector"
-                insertDisabled={state.medications.length === 0 || busy}
-                onInsert={() =>
-                  runWordAction(
-                    () => insertMedication(joinSelectedNames(state.medications)),
-                    "Inserted the selected medications at the cursor."
-                  )
-                }
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="investigation">
-            <AccordionHeader>Investigation</AccordionHeader>
-            <AccordionPanel>
-              <CatalogSection
-                data={investigationCatalog}
-                selected={state.investigations}
-                onChange={(investigations) => patchState({ investigations })}
-                searchPlaceholder="Search investigations..."
-                insertLabel="Insert investigation"
-                ariaLabel="Investigation selector"
-                insertDisabled={state.investigations.length === 0 || busy}
-                onInsert={() =>
-                  runWordAction(
-                    () => insertInvestigation(joinSelectedNames(state.investigations)),
-                    "Inserted the selected investigations at the cursor."
-                  )
-                }
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="treatment">
-            <AccordionHeader>Treatment</AccordionHeader>
-            <AccordionPanel>
-              <CatalogSection
-                data={treatmentCatalog}
-                selected={state.treatments}
-                onChange={(treatments) => patchState({ treatments })}
-                searchPlaceholder="Search treatments..."
-                insertLabel="Insert treatment"
-                ariaLabel="Treatment selector"
-                insertDisabled={state.treatments.length === 0 || busy}
-                onInsert={() =>
-                  runWordAction(
-                    () => insertTreatment(joinSelectedNames(state.treatments)),
-                    "Inserted the selected treatments at the cursor."
-                  )
-                }
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="assessment">
-            <AccordionHeader>Assessment</AccordionHeader>
-            <AccordionPanel>
-              <TextSection
-                label="Assessment"
-                value={state.assessment}
-                onChange={(assessment) => patchState({ assessment })}
-                placeholder="Clinical assessment"
-                insertLabel="Insert assessment"
-                onInsert={() =>
-                  runWordAction(() => insertAssessment(state.assessment), "Inserted the assessment at the cursor.")
-                }
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="plan">
-            <AccordionHeader>Plan</AccordionHeader>
-            <AccordionPanel>
-              <TextSection
-                label="Plan"
-                value={state.plan}
-                onChange={(plan) => patchState({ plan })}
-                placeholder="Management plan"
-                insertLabel="Insert plan"
-                onInsert={() => runWordAction(() => insertPlan(state.plan), "Inserted the plan at the cursor.")}
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="follow-up">
-            <AccordionHeader>Follow-up</AccordionHeader>
-            <AccordionPanel>
-              <TextSection
-                label="Follow-up"
-                value={state.followUp}
-                onChange={(followUp) => patchState({ followUp })}
-                placeholder="e.g. 4 weeks"
-                insertLabel="Insert follow-up"
-                onInsert={() =>
-                  runWordAction(() => insertFollowUp(state.followUp), "Inserted the follow-up at the cursor.")
-                }
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="standard-text">
-            <AccordionHeader>Standard Text</AccordionHeader>
-            <AccordionPanel>
-              <StandardTextPanel
-                catalog={standardTextCatalog}
-                onInsert={(text) =>
-                  runWordAction(() => insertAtCursor(text), "Inserted standard text at the cursor.")
-                }
-              />
-            </AccordionPanel>
-          </AccordionItem>
-
-          <AccordionItem value="preview">
-            <AccordionHeader>Preview</AccordionHeader>
-            <AccordionPanel>
-              <PreviewPanel state={state} />
-              <PlaceholderStatus detections={detections} />
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
+        {mode === "customise" ? (
+          <CustomisePanel
+            workspace={workspace}
+            onChange={setWorkspace}
+            onExport={exportLibrary}
+            onImport={importLibrary}
+            onResetDefaults={resetDefaults}
+            onInsertPlaceholder={(placeholder) =>
+              runWordAction(
+                () => insertAtCursor(placeholder),
+                `Inserted ${placeholder} at the cursor so you can build a Word template.`
+              )
+            }
+          />
+        ) : (
+          <Accordion
+            multiple
+            collapsible
+            defaultOpenItems={visibleSections.slice(0, 2).map((section) => section.id).concat(["preview"])}
+          >
+            {visibleSections.map((section) => (
+              <AccordionItem key={section.id} value={section.id}>
+                <AccordionHeader>{section.name}</AccordionHeader>
+                <AccordionPanel>{renderSection(section)}</AccordionPanel>
+              </AccordionItem>
+            ))}
+            <AccordionItem value="preview">
+              <AccordionHeader>Preview</AccordionHeader>
+              <AccordionPanel>
+                <PreviewPanel workspace={workspace} state={state} />
+                <PlaceholderStatus detections={detections} />
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        )}
       </div>
 
       <footer className={styles.footer}>
-        <div className={styles.footerRow}>
-          <Button appearance="primary" onClick={onPopulate} disabled={busy}>
-            Populate Letter
-          </Button>
-          <Button appearance="secondary" onClick={clearSelections} disabled={busy}>
-            Clear selections
-          </Button>
-          <Button appearance="subtle" onClick={resetForm} disabled={busy}>
-            Reset form
-          </Button>
-        </div>
+        {mode === "letter" ? (
+          <div className={styles.footerRow}>
+            <Button appearance="primary" onClick={onPopulate} disabled={busy}>
+              Populate Letter
+            </Button>
+            <Button appearance="secondary" onClick={clearSelections} disabled={busy}>
+              Clear selections
+            </Button>
+            <Button appearance="subtle" onClick={resetForm} disabled={busy}>
+              Reset form
+            </Button>
+          </div>
+        ) : null}
         <Text className={styles.disclaimer} size={100}>
-          Demonstration terminology only. This is a document tool, not a diagnostic system, and the lists are
-          not clinically comprehensive.
+          Demonstration terminology only. This is a document tool, not a diagnostic system. Each person can
+          replace the lists with their own.
         </Text>
       </footer>
     </div>

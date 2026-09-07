@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Field, Input, makeStyles } from "@fluentui/react-components";
-import { LetterState } from "../state/useLetterState";
+import { PatientDetails } from "../state/useLetterState";
 
 const useStyles = makeStyles({
   stack: {
@@ -11,8 +11,8 @@ const useStyles = makeStyles({
 });
 
 export interface PatientFieldsProps {
-  state: LetterState;
-  onChange: (patch: Partial<LetterState>) => void;
+  patient: PatientDetails;
+  onChange: (patch: Partial<PatientDetails>) => void;
 }
 
 const PatientFields: React.FC<PatientFieldsProps> = (props) => {
@@ -22,7 +22,7 @@ const PatientFields: React.FC<PatientFieldsProps> = (props) => {
     <div className={styles.stack}>
       <Field label="Patient name">
         <Input
-          value={props.state.patientName}
+          value={props.patient.patientName}
           onChange={(_event, data) => props.onChange({ patientName: data.value })}
           placeholder="Full name"
         />
@@ -30,13 +30,13 @@ const PatientFields: React.FC<PatientFieldsProps> = (props) => {
       <Field label="Date of birth">
         <Input
           type="date"
-          value={props.state.dateOfBirth}
+          value={props.patient.dateOfBirth}
           onChange={(_event, data) => props.onChange({ dateOfBirth: data.value })}
         />
       </Field>
       <Field label="Patient / reference number">
         <Input
-          value={props.state.patientId}
+          value={props.patient.patientId}
           onChange={(_event, data) => props.onChange({ patientId: data.value })}
           placeholder="Hospital or NHS number"
         />
@@ -44,19 +44,19 @@ const PatientFields: React.FC<PatientFieldsProps> = (props) => {
       <Field label="Date of letter">
         <Input
           type="date"
-          value={props.state.letterDate}
+          value={props.patient.letterDate}
           onChange={(_event, data) => props.onChange({ letterDate: data.value })}
         />
       </Field>
       <Field label="Clinician name">
         <Input
-          value={props.state.clinicianName}
+          value={props.patient.clinicianName}
           onChange={(_event, data) => props.onChange({ clinicianName: data.value })}
         />
       </Field>
       <Field label="Clinician role">
         <Input
-          value={props.state.clinicianRole}
+          value={props.patient.clinicianRole}
           onChange={(_event, data) => props.onChange({ clinicianRole: data.value })}
           placeholder="e.g. Consultant Physician"
         />

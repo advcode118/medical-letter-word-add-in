@@ -1,0 +1,32 @@
+{
+  "categories": [
+    {
+      "id": "bloods",
+      "name": "Blood tests",
+      "items": [
+        { "id": "fbc", "name": "Full blood count" },
+        { "id": "ue", "name": "Urea and electrolytes" },
+        { "id": "crp", "name": "C-reactive protein" },
+        { "id": "hba1c", "name": "HbA1c" },
+        { "id": "tft", "name": "Thyroid function tests" }
+      ]
+    },
+    {
+      "id": "imaging",
+      "name": "Imaging and cardiology",
+      "items": [
+        { "id": "chest-xray", "name": "Chest X-ray" },
+        { "id": "ecg", "name": "ECG" },
+        { "id": "echocardiogram", "name": "Echocardiogram" }
+      ]
+    },
+    {
+      "id": "respiratory",
+      "name": "Respiratory",
+      "items": [
+        { "id": "spirometry", "name": "Spirometry" },
+        { "id": "peak-flow", "name": "Peak flow" }
+      ]
+    }
+  ]
+}

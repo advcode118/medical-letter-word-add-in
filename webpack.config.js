@@ -30,7 +30,7 @@ module.exports = async (env, options) => {
       clean: true,
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".html", ".js"],
+      extensions: [".ts", ".tsx", ".html", ".js", ".json"],
     },
     module: {
       rules: [
@@ -101,7 +101,10 @@ module.exports = async (env, options) => {
       },
       server: {
         type: "https",
-        options: env.WEBPACK_BUILD || options.https !== undefined ? options.https : await getHttpsOptions(),
+        options:
+          options.mode === "development" && !env.WEBPACK_BUILD && options.https === undefined
+            ? await getHttpsOptions()
+            : options.https,
       },
       port: process.env.npm_package_config_dev_server_port || 3000,
     },

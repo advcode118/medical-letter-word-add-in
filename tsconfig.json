@@ -5,6 +5,8 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "module": "ES2020",
     "moduleResolution": "bundler",
     "noImplicitReturns": true,

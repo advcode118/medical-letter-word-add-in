@@ -4,3 +4,12 @@ test/testBuild
 
 # Node modules folder
 node_modules/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# Word lock files and converted HTML
+~$*
+*.html.docx

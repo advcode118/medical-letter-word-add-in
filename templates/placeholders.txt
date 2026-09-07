@@ -1,0 +1,37 @@
+Paste these placeholders into a Microsoft Word letter template.
+Keep each token on its own or inside a sentence. Do not split a token across different fonts.
+
+{{PATIENT_NAME}}
+{{DOB}}
+{{PATIENT_ID}}
+{{LETTER_DATE}}
+{{CLINICIAN_NAME}}
+{{CLINICIAN_ROLE}}
+{{DIAGNOSIS}}
+{{MEDICATION}}
+{{INVESTIGATION}}
+{{TREATMENT}}
+{{ASSESSMENT}}
+{{PLAN}}
+{{FOLLOW_UP}}
+
+Example:
+
+Dear colleague,
+
+Re: {{PATIENT_NAME}}, DOB {{DOB}}, {{PATIENT_ID}}
+
+Diagnoses: {{DIAGNOSIS}}
+
+Assessment
+{{ASSESSMENT}}
+
+Plan
+{{PLAN}}
+
+Follow-up: {{FOLLOW_UP}}
+
+Yours sincerely,
+{{CLINICIAN_NAME}}
+{{CLINICIAN_ROLE}}
+{{LETTER_DATE}}

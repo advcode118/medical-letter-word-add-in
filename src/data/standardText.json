@@ -1,0 +1,84 @@
+{
+  "categories": [
+    {
+      "id": "respiratory",
+      "name": "Respiratory",
+      "items": [
+        {
+          "id": "asthma_advice",
+          "name": "Asthma advice",
+          "text": "The patient has been advised on asthma self-management, including recognition of deterioration and when to seek urgent medical attention. Regular preventer therapy should be continued as prescribed."
+        },
+        {
+          "id": "inhaler_advice",
+          "name": "Inhaler advice",
+          "text": "Inhaler technique was discussed. The patient was advised to use a spacer where appropriate and to rinse the mouth after using a corticosteroid inhaler."
+        },
+        {
+          "id": "copd_advice",
+          "name": "COPD advice",
+          "text": "COPD management was reviewed, including inhaler use, smoking cessation where relevant, and safety-netting for infective exacerbations."
+        },
+        {
+          "id": "safety_netting_respiratory",
+          "name": "Safety-netting",
+          "text": "The patient was advised to seek urgent medical attention if they develop worsening breathlessness, chest pain, haemoptysis, or fever."
+        }
+      ]
+    },
+    {
+      "id": "cardiovascular",
+      "name": "Cardiovascular",
+      "items": [
+        {
+          "id": "hypertension_advice",
+          "name": "Hypertension advice",
+          "text": "Blood pressure management was discussed, including adherence to antihypertensive medication, home monitoring if appropriate, and lifestyle measures."
+        },
+        {
+          "id": "cardiovascular_risk_advice",
+          "name": "Cardiovascular risk advice",
+          "text": "Cardiovascular risk factors were reviewed. Advice was given regarding diet, physical activity, smoking cessation, and lipid management as appropriate."
+        }
+      ]
+    },
+    {
+      "id": "endocrine",
+      "name": "Endocrine",
+      "items": [
+        {
+          "id": "diabetes_advice",
+          "name": "Diabetes advice",
+          "text": "Diabetes care was reviewed, including medication, monitoring, and the importance of foot, eye, and kidney screening as per usual care."
+        }
+      ]
+    },
+    {
+      "id": "neurological",
+      "name": "Neurological",
+      "items": [
+        {
+          "id": "migraine_advice",
+          "name": "Migraine advice",
+          "text": "Migraine triggers, acute treatment, and when to seek further review were discussed. Safety-netting advice was given for sudden or atypical headache."
+        }
+      ]
+    },
+    {
+      "id": "follow_up",
+      "name": "Follow-up",
+      "items": [
+        {
+          "id": "routine_follow_up",
+          "name": "Routine follow-up",
+          "text": "Routine follow-up will be arranged. The patient should contact the surgery sooner if symptoms worsen."
+        },
+        {
+          "id": "no_further_follow_up",
+          "name": "No further follow-up",
+          "text": "No further follow-up is planned from this clinic. The patient should contact their GP if new or worsening symptoms occur."
+        }
+      ]
+    }
+  ]
+}

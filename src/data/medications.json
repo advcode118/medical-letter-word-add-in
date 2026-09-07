@@ -1,0 +1,41 @@
+{
+  "categories": [
+    {
+      "id": "respiratory",
+      "name": "Respiratory",
+      "items": [
+        { "id": "salbutamol-inhaler", "name": "Salbutamol inhaler" },
+        { "id": "beclometasone-inhaler", "name": "Beclometasone inhaler" },
+        { "id": "prednisolone", "name": "Prednisolone" }
+      ]
+    },
+    {
+      "id": "cardiovascular",
+      "name": "Cardiovascular",
+      "items": [
+        { "id": "amlodipine", "name": "Amlodipine" },
+        { "id": "ramipril", "name": "Ramipril" },
+        { "id": "atorvastatin", "name": "Atorvastatin" },
+        { "id": "bisoprolol", "name": "Bisoprolol" },
+        { "id": "apixaban", "name": "Apixaban" }
+      ]
+    },
+    {
+      "id": "endocrine",
+      "name": "Endocrine",
+      "items": [
+        { "id": "metformin", "name": "Metformin" },
+        { "id": "levothyroxine", "name": "Levothyroxine" },
+        { "id": "insulin", "name": "Insulin" }
+      ]
+    },
+    {
+      "id": "analgesia",
+      "name": "Analgesia",
+      "items": [
+        { "id": "paracetamol", "name": "Paracetamol" },
+        { "id": "ibuprofen", "name": "Ibuprofen" }
+      ]
+    }
+  ]
+}

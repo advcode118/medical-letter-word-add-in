@@ -1,0 +1,30 @@
+{
+  "categories": [
+    {
+      "id": "lifestyle",
+      "name": "Lifestyle",
+      "items": [
+        { "id": "smoking-cessation", "name": "Smoking cessation" },
+        { "id": "weight-management", "name": "Weight management" },
+        { "id": "exercise-advice", "name": "Exercise advice" }
+      ]
+    },
+    {
+      "id": "therapy",
+      "name": "Therapy",
+      "items": [
+        { "id": "physiotherapy", "name": "Physiotherapy" },
+        { "id": "pulmonary-rehab", "name": "Pulmonary rehabilitation" },
+        { "id": "cardiac-rehab", "name": "Cardiac rehabilitation" }
+      ]
+    },
+    {
+      "id": "procedures",
+      "name": "Procedures",
+      "items": [
+        { "id": "spirometry-review", "name": "Spirometry review" },
+        { "id": "blood-pressure-monitoring", "name": "Blood pressure monitoring" }
+      ]
+    }
+  ]
+}

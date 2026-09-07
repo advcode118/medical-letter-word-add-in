@@ -1,0 +1,129 @@
+{
+  "categories": [
+    {
+      "id": "respiratory",
+      "name": "Respiratory",
+      "items": [
+        {
+          "id": "asthma",
+          "name": "Asthma",
+          "standardText": ["asthma_advice", "inhaler_advice"]
+        },
+        {
+          "id": "copd",
+          "name": "COPD",
+          "standardText": ["copd_advice"]
+        },
+        { "id": "pneumonia", "name": "Pneumonia" },
+        { "id": "pulmonary-embolism", "name": "Pulmonary embolism" },
+        { "id": "bronchitis", "name": "Bronchitis" },
+        { "id": "obstructive-sleep-apnoea", "name": "Obstructive sleep apnoea" }
+      ]
+    },
+    {
+      "id": "cardiovascular",
+      "name": "Cardiovascular",
+      "items": [
+        {
+          "id": "hypertension",
+          "name": "Hypertension",
+          "standardText": ["hypertension_advice", "cardiovascular_risk_advice"]
+        },
+        { "id": "atrial-fibrillation", "name": "Atrial fibrillation" },
+        { "id": "heart-failure", "name": "Heart failure" },
+        { "id": "ischaemic-heart-disease", "name": "Ischaemic heart disease" },
+        { "id": "angina", "name": "Angina" },
+        { "id": "myocardial-infarction", "name": "Myocardial infarction" }
+      ]
+    },
+    {
+      "id": "endocrine",
+      "name": "Endocrine",
+      "items": [
+        { "id": "type-1-diabetes", "name": "Type 1 diabetes" },
+        {
+          "id": "type-2-diabetes",
+          "name": "Type 2 diabetes",
+          "standardText": ["diabetes_advice"]
+        },
+        { "id": "hypothyroidism", "name": "Hypothyroidism" },
+        { "id": "hyperthyroidism", "name": "Hyperthyroidism" },
+        { "id": "adrenal-insufficiency", "name": "Adrenal insufficiency" }
+      ]
+    },
+    {
+      "id": "gastrointestinal",
+      "name": "Gastrointestinal",
+      "items": [
+        { "id": "gord", "name": "Gastro-oesophageal reflux disease" },
+        { "id": "ibs", "name": "Irritable bowel syndrome" },
+        { "id": "ibd", "name": "Inflammatory bowel disease" },
+        { "id": "coeliac-disease", "name": "Coeliac disease" },
+        { "id": "constipation", "name": "Constipation" }
+      ]
+    },
+    {
+      "id": "neurological",
+      "name": "Neurological",
+      "items": [
+        {
+          "id": "migraine",
+          "name": "Migraine",
+          "standardText": ["migraine_advice"]
+        },
+        { "id": "epilepsy", "name": "Epilepsy" },
+        { "id": "parkinsons-disease", "name": "Parkinson's disease" },
+        { "id": "multiple-sclerosis", "name": "Multiple sclerosis" },
+        { "id": "stroke", "name": "Stroke" }
+      ]
+    },
+    {
+      "id": "musculoskeletal",
+      "name": "Musculoskeletal",
+      "items": [
+        { "id": "osteoarthritis", "name": "Osteoarthritis" },
+        { "id": "rheumatoid-arthritis", "name": "Rheumatoid arthritis" },
+        { "id": "osteoporosis", "name": "Osteoporosis" },
+        { "id": "low-back-pain", "name": "Low back pain" }
+      ]
+    },
+    {
+      "id": "dermatology",
+      "name": "Dermatology",
+      "items": [
+        { "id": "eczema", "name": "Eczema" },
+        { "id": "psoriasis", "name": "Psoriasis" },
+        { "id": "acne", "name": "Acne" },
+        { "id": "cellulitis", "name": "Cellulitis" }
+      ]
+    },
+    {
+      "id": "renal",
+      "name": "Renal",
+      "items": [
+        { "id": "chronic-kidney-disease", "name": "Chronic kidney disease" },
+        { "id": "acute-kidney-injury", "name": "Acute kidney injury" },
+        { "id": "renal-stones", "name": "Renal stones" }
+      ]
+    },
+    {
+      "id": "infectious-disease",
+      "name": "Infectious disease",
+      "items": [
+        { "id": "viral-infection", "name": "Viral infection" },
+        { "id": "bacterial-infection", "name": "Bacterial infection" },
+        { "id": "urinary-tract-infection", "name": "Urinary tract infection" }
+      ]
+    },
+    {
+      "id": "psychiatric",
+      "name": "Psychiatric",
+      "items": [
+        { "id": "depression", "name": "Depression" },
+        { "id": "anxiety", "name": "Anxiety" },
+        { "id": "bipolar-disorder", "name": "Bipolar disorder" },
+        { "id": "psychosis", "name": "Psychosis" }
+      ]
+    }
+  ]
+}

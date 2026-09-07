@@ -10,57 +10,32 @@ This is a **document-generation tool**, not a diagnostic system. The bundled cli
 
 ## Install in Word (for colleagues)
 
-This is a custom Word add-in, not an Office Store app. Word will not install it from the GitHub website. You put the **manifest file** in a **shared folder on your PC**, then tell Word to trust that folder.
+Skip **Trusted Add-in Catalogs**. That screen only accepts a SharePoint `https://` catalog, not GitHub Pages and not a normal folder.
 
-Do **not** paste `https://advcode118.github.io/...` into **Catalog Url**. That box wants a Windows folder path such as `\\YOUR-PC\MedicalLetter`.
+Use the installer instead. It registers the add-in for your Windows account the same way a developer sideload works.
 
-### 1. Download the install file
+### Recommended: run the installer
 
-Right-click and save:
+1. Close Word.
+2. Download **[Install-MedicalLetter.cmd](https://advcode118.github.io/medical-letter-word-add-in/Install-MedicalLetter.cmd)** and save it somewhere easy, such as Downloads.
+3. Double-click it. If Windows asks, choose **More info → Run anyway**.
+4. Open Word. On the **Home** tab, choose **Medical Letter**.
 
-**[manifest.xml](https://advcode118.github.io/medical-letter-word-add-in/manifest.xml)**
+If the `.cmd` file is blocked, open **PowerShell** and paste:
 
-Use this file, not the `manifest.xml` inside the source code folder (that one is only for developers).
+```powershell
+irm https://advcode118.github.io/medical-letter-word-add-in/Install-MedicalLetter.ps1 | iex
+```
 
-### 2. Put it in a shared folder
+Then close Word completely and open it again.
 
-1. In File Explorer, create a folder such as `C:\MedicalLetter`.
-2. Copy `manifest.xml` into that folder (the XML file itself, not a zip, and not a subfolder).
-3. Right-click the folder → **Properties** → **Sharing** → **Share**.
-4. Share it with yourself (or **Everyone**). Click **Share**, then **Done**.
-5. On the **Sharing** tab, copy the network path. It looks like:
-
-   `\\LAPTOP-NAME\MedicalLetter`
-
-   If you only see `C:\MedicalLetter`, you have not shared it yet. Catalog Url must start with `\\`.
-
-### 3. Trust that folder in Word
-
-This is the **Trusted Add-in Catalogs** screen (File → Options → Trust Center → Trust Center Settings → Trusted Add-in Catalogs).
-
-1. In **Catalog Url**, paste the `\\LAPTOP-NAME\MedicalLetter` path.
-2. Click **Add catalog**.
-3. In the table, tick **Show in Menu** for that row. If you skip this, the add-in never appears.
-4. Click **OK** on every dialog.
-5. **Quit Word completely** (close all windows) and open it again.
-
-### 4. Insert it from Shared Folder
-
-1. Open a document.
-2. **Home → Add-ins → Advanced** (or **Insert → My Add-ins**).
-3. Open the **SHARED FOLDER** tab at the top (not STORE, not MY ADD-INS).
-4. Select **Medical Letter** → **Add**.
-5. Use **Home → Medical Letter** to open the sidebar.
+To remove it later, run **[Uninstall-MedicalLetter.ps1](https://advcode118.github.io/medical-letter-word-add-in/Uninstall-MedicalLetter.ps1)** the same way.
 
 You need internet when the sidebar loads (the UI comes from GitHub Pages). Patient details stay in Word on your computer.
 
-### What to send a colleague
+### Organisation install
 
-Send them [the install page](https://advcode118.github.io/medical-letter-word-add-in/) and this production manifest:
-
-`https://advcode118.github.io/medical-letter-word-add-in/manifest.xml`
-
-Each person repeats the shared-folder steps on their own PC, unless IT puts the same `manifest.xml` on a shared drive everyone can use (`\\SERVER\Addins`) and they all add that one Catalog Url.
+If you have a Microsoft 365 admin, they can upload the production `manifest.xml` under **Integrated apps** so it appears for everyone. That is the only `https://` catalog path that Word’s Trust Center is meant for.
 
 ---
 

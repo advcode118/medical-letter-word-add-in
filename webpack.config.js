@@ -80,6 +80,22 @@ module.exports = async (env, options) => {
             toType: "file",
           },
           {
+            from: "assets/*",
+            to: "assets/[name][ext][query]",
+          },
+          {
+            from: "public/Install-MedicalLetter.ps1",
+            to: "Install-MedicalLetter.ps1",
+          },
+          {
+            from: "public/Uninstall-MedicalLetter.ps1",
+            to: "Uninstall-MedicalLetter.ps1",
+          },
+          {
+            from: "public/Install-MedicalLetter.cmd",
+            to: "Install-MedicalLetter.cmd",
+          },
+          {
             from: "manifest*.xml",
             to: "[name]" + "[ext]",
             transform(content) {

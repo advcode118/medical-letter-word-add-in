@@ -23,6 +23,7 @@ export interface WorkspaceSection {
 export interface Workspace {
   version: 1;
   sections: WorkspaceSection[];
+  letterTemplate: string;
 }
 
 export const WORKSPACE_STORAGE_KEY = "medical-letter-workspace-v1";

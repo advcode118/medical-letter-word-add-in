@@ -3,7 +3,7 @@ import { makeStyles, Text, tokens } from "@fluentui/react-components";
 import { LetterState } from "../state/useLetterState";
 import { Workspace } from "../types/workspace";
 import { formatDateDisplay } from "../utils/dates";
-import { joinSelectedNames } from "../utils/catalog";
+import { joinSelectedNames, joinWithOther } from "../utils/catalog";
 
 const useStyles = makeStyles({
   root: {
@@ -63,23 +63,36 @@ const PreviewPanel: React.FC<PreviewPanelProps> = (props) => {
                 <PreviewLine label="Patient" value={state.patient.patientName} />
                 <PreviewLine label="Date of birth" value={formatDateDisplay(state.patient.dateOfBirth)} />
                 <PreviewLine label="Reference" value={state.patient.patientId} />
+                <PreviewLine label="Other" value={state.otherValues[section.id] ?? ""} />
               </React.Fragment>
             );
           }
           if (section.kind === "standardText") {
-            return null;
+            const other = (state.otherValues[section.id] ?? "").trim();
+            if (!other) {
+              return null;
+            }
+            return <PreviewLine key={section.id} label={`${section.name} (other)`} value={other} />;
           }
+          const other = state.otherValues[section.id] ?? "";
           if (section.kind === "catalog") {
             return (
               <PreviewLine
                 key={section.id}
                 label={section.name}
-                value={joinSelectedNames(state.catalogSelections[section.id] ?? []).replace(/; /g, "\n")}
+                value={joinSelectedNames(state.catalogSelections[section.id] ?? [], other).replace(
+                  /; /g,
+                  "\n"
+                )}
               />
             );
           }
           return (
-            <PreviewLine key={section.id} label={section.name} value={state.textValues[section.id] ?? ""} />
+            <PreviewLine
+              key={section.id}
+              label={section.name}
+              value={joinWithOther([state.textValues[section.id] ?? ""], other, "\n\n")}
+            />
           );
         })}
     </div>

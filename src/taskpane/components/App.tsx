@@ -1,3 +1,5 @@
+/* global window */
+
 import * as React from "react";
 import { useState } from "react";
 import {
@@ -19,11 +21,14 @@ import { Catalog } from "../../types/catalog";
 import { WorkspaceSection } from "../../types/workspace";
 import { useLetterState } from "../../state/useLetterState";
 import { useWorkspace } from "../../state/useWorkspace";
-import { getSuggestedStandardText, joinSelectedNames } from "../../utils/catalog";
+import { getSuggestedStandardText, joinSelectedNames, joinWithOther } from "../../utils/catalog";
 import { buildPlaceholderValues } from "../../word/placeholders";
+import { buildLetterTemplateHtml } from "../../word/letterTemplate";
 import {
   detectPlaceholders,
   insertAtCursor,
+  insertHtmlIntoBody,
+  isDocumentBodyEmpty,
   isWordHost,
   populateLetter,
   PlaceholderDetection,
@@ -113,7 +118,7 @@ function mergedStandardText(sections: WorkspaceSection[]): Catalog {
 const App: React.FC<AppProps> = (props: AppProps) => {
   const styles = useStyles();
   const { workspace, setWorkspace, resetDefaults, exportLibrary, importLibrary } = useWorkspace();
-  const { state, patchPatient, setCatalogSelection, setTextValue, clearSelections, resetForm } =
+  const { state, patchPatient, setCatalogSelection, setTextValue, setOtherValue, clearSelections, resetForm } =
     useLetterState();
   const [mode, setMode] = useState<"letter" | "customise">("letter");
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -155,7 +160,27 @@ const App: React.FC<AppProps> = (props: AppProps) => {
     setBusy(true);
     setNotice(null);
     try {
-      const found = await detectPlaceholders(placeholderValues.map((item) => item.token));
+      const tokens = placeholderValues.map((item) => item.token);
+      let found = await detectPlaceholders(tokens);
+      let insertedTemplate = false;
+
+      if (!found.some((item) => item.found)) {
+        const empty = await isDocumentBodyEmpty();
+        if (!empty) {
+          setDetections(found);
+          setNotice({
+            intent: "warning",
+            title: "No placeholders replaced",
+            message:
+              "None of the expected placeholders were found. Use a blank document, or click Insert template first.",
+          });
+          return;
+        }
+        await insertHtmlIntoBody(buildLetterTemplateHtml(workspace), "Replace");
+        insertedTemplate = true;
+        found = await detectPlaceholders(tokens);
+      }
+
       setDetections(found);
 
       const result = await populateLetter(
@@ -166,7 +191,7 @@ const App: React.FC<AppProps> = (props: AppProps) => {
       const replacedCount = result.replaced.reduce((sum, item) => sum + item.count, 0);
       const emptyCount = result.skippedEmpty.length;
 
-      if (replacedCount === 0 && missingCount === found.length) {
+      if (replacedCount === 0 && missingCount === found.length && !insertedTemplate) {
         setNotice({
           intent: "warning",
           title: "No placeholders replaced",
@@ -175,8 +200,10 @@ const App: React.FC<AppProps> = (props: AppProps) => {
       } else {
         setNotice({
           intent: missingCount > 0 || emptyCount > 0 ? "warning" : "success",
-          title: "Letter populated",
-          message: `Replaced ${replacedCount} placeholder${replacedCount === 1 ? "" : "s"}. ${
+            title: insertedTemplate ? "Letter inserted and populated" : "Letter populated",
+            message: `${
+              insertedTemplate ? "Inserted your letter template. " : ""
+            }Replaced ${replacedCount} placeholder${replacedCount === 1 ? "" : "s"}. ${
             missingCount > 0 ? `${missingCount} not found. ` : ""
           }${emptyCount > 0 ? `${emptyCount} left unchanged because they had no value.` : ""}`.trim(),
         });
@@ -188,12 +215,52 @@ const App: React.FC<AppProps> = (props: AppProps) => {
     }
   };
 
+  const onInsertTemplate = async () => {
+    setBusy(true);
+    setNotice(null);
+    try {
+      const empty = await isDocumentBodyEmpty();
+      if (!empty) {
+        const confirmed = window.confirm(
+          "This document already has content. Insert your letter template at the end?"
+        );
+        if (!confirmed) {
+          return;
+        }
+      }
+
+      await insertHtmlIntoBody(buildLetterTemplateHtml(workspace), empty ? "Replace" : "End");
+      const found = await detectPlaceholders(placeholderValues.map((item) => item.token));
+      setDetections(found);
+      setNotice({
+        intent: "success",
+        title: "Document updated",
+        message: empty
+          ? "Inserted your letter template."
+          : "Inserted your letter template at the end of the document.",
+      });
+    } catch (error) {
+      showError(error, "Could not insert the letter template. Check that a document is open.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const renderSection = (section: WorkspaceSection) => {
     if (section.kind === "patient") {
-      return <PatientFields patient={state.patient} onChange={patchPatient} />;
+      return (
+        <PatientFields
+          patient={state.patient}
+          onChange={patchPatient}
+          otherValue={state.otherValues[section.id] ?? ""}
+          onOtherChange={(value) => setOtherValue(section.id, value)}
+        />
+      );
     }
     if (section.kind === "catalog") {
       const selected = state.catalogSelections[section.id] ?? [];
+      const other = state.otherValues[section.id] ?? "";
+      const catalogText = joinSelectedNames(selected, other);
       return (
         <>
           {section.placeholder ? (
@@ -208,10 +275,12 @@ const App: React.FC<AppProps> = (props: AppProps) => {
             searchPlaceholder={`Search ${section.name.toLowerCase()}...`}
             insertLabel={`Insert ${section.name.toLowerCase()}`}
             ariaLabel={`${section.name} selector`}
-            insertDisabled={selected.length === 0 || busy}
+            otherValue={other}
+            onOtherChange={(value) => setOtherValue(section.id, value)}
+            insertDisabled={!catalogText || busy}
             onInsert={() =>
               runWordAction(
-                () => insertAtCursor(joinSelectedNames(selected)),
+                () => insertAtCursor(catalogText),
                 `Inserted ${section.name.toLowerCase()} at the cursor.`
               )
             }
@@ -231,6 +300,8 @@ const App: React.FC<AppProps> = (props: AppProps) => {
       return (
         <StandardTextPanel
           catalog={section.catalog}
+          otherValue={state.otherValues[section.id] ?? ""}
+          onOtherChange={(value) => setOtherValue(section.id, value)}
           onInsert={(text) =>
             runWordAction(() => insertAtCursor(text), "Inserted standard text at the cursor.")
           }
@@ -238,6 +309,8 @@ const App: React.FC<AppProps> = (props: AppProps) => {
       );
     }
     const value = state.textValues[section.id] ?? "";
+    const other = state.otherValues[section.id] ?? "";
+    const combinedText = joinWithOther([value], other, "\n\n");
     return (
       <>
         {section.placeholder ? (
@@ -251,8 +324,14 @@ const App: React.FC<AppProps> = (props: AppProps) => {
           onChange={(next) => setTextValue(section.id, next)}
           placeholder={section.name}
           insertLabel={`Insert ${section.name.toLowerCase()}`}
+          otherValue={other}
+          onOtherChange={(next) => setOtherValue(section.id, next)}
+          insertDisabled={!combinedText || busy}
           onInsert={() =>
-            runWordAction(() => insertAtCursor(value), `Inserted ${section.name.toLowerCase()} at the cursor.`)
+            runWordAction(
+              () => insertAtCursor(combinedText),
+              `Inserted ${section.name.toLowerCase()} at the cursor.`
+            )
           }
         />
       </>
@@ -266,7 +345,7 @@ const App: React.FC<AppProps> = (props: AppProps) => {
           {props.title}
         </Text>
         <Text className={styles.subtitle} size={200} block>
-          Fill the letter, or customise the lists for this user
+          Fill a blank document with your letter template, or complete placeholders in an existing document.
         </Text>
         <TabList
           selectedValue={mode}
@@ -342,6 +421,9 @@ const App: React.FC<AppProps> = (props: AppProps) => {
           <div className={styles.footerRow}>
             <Button appearance="primary" onClick={onPopulate} disabled={busy}>
               Populate Letter
+            </Button>
+            <Button appearance="secondary" onClick={onInsertTemplate} disabled={busy}>
+              Insert template
             </Button>
             <Button appearance="secondary" onClick={clearSelections} disabled={busy}>
               Clear selections

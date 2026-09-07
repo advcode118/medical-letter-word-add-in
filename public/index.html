@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Medical Letter for Microsoft Word</title>
+    <style>
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        max-width: 44rem;
+        margin: 2rem auto;
+        padding: 0 1rem 3rem;
+        line-height: 1.5;
+        color: #1b1b1b;
+      }
+      h1,
+      h2 {
+        line-height: 1.2;
+      }
+      a {
+        color: #0f6cbd;
+      }
+      code {
+        font-size: 0.95em;
+        background: #f5f5f5;
+        padding: 0.1em 0.35em;
+      }
+      .note {
+        background: #f5f5f5;
+        border-left: 4px solid #0f6cbd;
+        padding: 0.75rem 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Medical Letter</h1>
+    <p>
+      A Microsoft Word sidebar for structured medical letters. The document stays a normal Word file.
+      This is a <strong>document tool</strong>, not a diagnostic system. Bundled lists are demonstration
+      data only.
+    </p>
+
+    <p class="note">
+      Install file:
+      <a href="manifest.xml"><strong>Download manifest.xml</strong></a>
+    </p>
+
+    <h2>Install in Word (once)</h2>
+    <ol>
+      <li>Download <a href="manifest.xml">manifest.xml</a> from this page.</li>
+      <li>Open Microsoft Word on Windows.</li>
+      <li>Go to <strong>Insert → Add-ins → My Add-ins</strong>.</li>
+      <li>Choose <strong>Upload My Add-in</strong> (sometimes under <strong>Shared Folder</strong> / the <strong>…</strong> menu) and select the downloaded <code>manifest.xml</code>.</li>
+      <li>On the <strong>Home</strong> tab, choose <strong>Medical Letter</strong> to open the task pane.</li>
+    </ol>
+    <p>
+      You need internet the first time Word loads the sidebar (the files are served from this site). Letter
+      content and patient details stay in Word on your computer.
+    </p>
+
+    <h2>Write a letter</h2>
+    <ol>
+      <li>Open a blank document, or a letterhead with empty body text.</li>
+      <li>Fill in patient details, then pick items from the lists. Use <strong>Other</strong> for a one-off value that is not in the list.</li>
+      <li>Click <strong>Populate Letter</strong>. On a blank document this inserts the letter layout and fills in the placeholders.</li>
+      <li>Or click <strong>Insert template</strong> first, then populate when you are ready.</li>
+    </ol>
+    <p>
+      Empty fields are left as placeholders such as <code>{{DIAGNOSIS}}</code> until you fill them and
+      populate again.
+    </p>
+
+    <h2>Customise</h2>
+    <p>
+      Open the <strong>Customise</strong> tab to edit the letter template, lists, and reusable paragraphs.
+      Those changes stay on this computer. Use <strong>Export library</strong> / <strong>Import library</strong>
+      to share lists with a colleague (this does not include patient data).
+    </p>
+
+    <h2>Source and help</h2>
+    <p>
+      Project repository:
+      <a href="https://github.com/advcode118/medical-letter-word-add-in"
+        >github.com/advcode118/medical-letter-word-add-in</a
+      >
+    </p>
+  </body>
+</html>

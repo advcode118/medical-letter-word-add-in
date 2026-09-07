@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Button, makeStyles, Text, tokens } from "@fluentui/react-components";
 import { Catalog, CatalogItem } from "../types/catalog";
+import OtherField from "./OtherField";
 
 const useStyles = makeStyles({
   category: {
@@ -36,6 +37,8 @@ export interface StandardTextPanelProps {
   catalog?: Catalog;
   suggested?: CatalogItem[];
   onInsert: (text: string) => void;
+  otherValue?: string;
+  onOtherChange?: (value: string) => void;
 }
 
 const StandardTextPanel: React.FC<StandardTextPanelProps> = (props) => {
@@ -87,6 +90,26 @@ const StandardTextPanel: React.FC<StandardTextPanelProps> = (props) => {
           </div>
         </div>
       ))}
+
+      {props.onOtherChange ? (
+        <>
+          <OtherField
+            value={props.otherValue ?? ""}
+            onChange={props.onOtherChange}
+            placeholder="Type a paragraph that is not in the list"
+          />
+          <div className={styles.buttons}>
+            <Button
+              appearance="primary"
+              size="small"
+              onClick={() => props.onInsert((props.otherValue ?? "").trim())}
+              disabled={!(props.otherValue ?? "").trim()}
+            >
+              Insert other text
+            </Button>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };

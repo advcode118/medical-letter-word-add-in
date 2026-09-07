@@ -1,7 +1,19 @@
 import { Catalog, CatalogCategory, CatalogItem, SelectedItem } from "../types/catalog";
 
-export function joinSelectedNames(items: SelectedItem[]): string {
-  return items.map((item) => item.name).join("; ");
+export function joinWithOther(parts: string[], otherText?: string, separator = "; "): string {
+  const values = parts.map((part) => part.trim()).filter((part) => part.length > 0);
+  const other = (otherText ?? "").trim();
+  if (other) {
+    values.push(other);
+  }
+  return values.join(separator);
+}
+
+export function joinSelectedNames(items: SelectedItem[], otherText?: string): string {
+  return joinWithOther(
+    items.map((item) => item.name),
+    otherText
+  );
 }
 
 export function getCategoryCheckState(

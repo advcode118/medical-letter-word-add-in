@@ -15,6 +15,7 @@ export interface LetterState {
   patient: PatientDetails;
   catalogSelections: Record<string, SelectedItem[]>;
   textValues: Record<string, string>;
+  otherValues: Record<string, string>;
 }
 
 export function createInitialPatient(): PatientDetails {
@@ -33,6 +34,7 @@ export function createInitialLetterState(): LetterState {
     patient: createInitialPatient(),
     catalogSelections: {},
     textValues: {},
+    otherValues: {},
   };
 }
 
@@ -60,11 +62,19 @@ export function useLetterState() {
     }));
   };
 
+  const setOtherValue = (sectionId: string, value: string) => {
+    setState((current) => ({
+      ...current,
+      otherValues: { ...current.otherValues, [sectionId]: value },
+    }));
+  };
+
   const clearSelections = () => {
     setState((current) => ({
       ...current,
       catalogSelections: {},
       textValues: {},
+      otherValues: {},
     }));
   };
 
@@ -77,6 +87,7 @@ export function useLetterState() {
     patchPatient,
     setCatalogSelection,
     setTextValue,
+    setOtherValue,
     clearSelections,
     resetForm,
   };

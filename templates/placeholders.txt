@@ -7,6 +7,7 @@ Keep each token on its own or inside a sentence. Do not split a token across dif
 {{LETTER_DATE}}
 {{CLINICIAN_NAME}}
 {{CLINICIAN_ROLE}}
+{{PATIENT_OTHER}}
 {{DIAGNOSIS}}
 {{MEDICATION}}
 {{INVESTIGATION}}
@@ -19,7 +20,7 @@ Example:
 
 Dear colleague,
 
-Re: {{PATIENT_NAME}}, DOB {{DOB}}, {{PATIENT_ID}}
+Re: {{PATIENT_NAME}}, DOB {{DOB}}, {{PATIENT_ID}}{{PATIENT_OTHER}}
 
 Diagnoses: {{DIAGNOSIS}}
 

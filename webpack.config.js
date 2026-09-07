@@ -6,7 +6,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
 const urlDev = "https://localhost:3010/";
-const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://advcode118.github.io/medical-letter-word-add-in/";
+const urlProdOrigin = "https://advcode118.github.io";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -28,6 +29,7 @@ module.exports = async (env, options) => {
     },
     output: {
       clean: true,
+      publicPath: dev ? "/" : "/medical-letter-word-add-in/",
     },
     resolve: {
       extensions: [".ts", ".tsx", ".html", ".js", ".json"],
@@ -69,8 +71,13 @@ module.exports = async (env, options) => {
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: "assets/*",
-            to: "assets/[name][ext][query]",
+            from: "public/index.html",
+            to: "index.html",
+          },
+          {
+            from: "public/.nojekyll",
+            to: ".nojekyll",
+            toType: "file",
           },
           {
             from: "manifest*.xml",
@@ -78,9 +85,11 @@ module.exports = async (env, options) => {
             transform(content) {
               if (dev) {
                 return content;
-              } else {
-                return content.toString().replace(new RegExp(urlDev, "g"), urlProd);
               }
+              return content
+                .toString()
+                .replace(new RegExp(urlDev, "g"), urlProd)
+                .replace(/https:\/\/localhost:3010/g, urlProdOrigin);
             },
           },
         ],

@@ -3,6 +3,7 @@
 import { Catalog } from "../types/catalog";
 import { Workspace, WorkspaceSection, WORKSPACE_STORAGE_KEY } from "../types/workspace";
 import { createDefaultWorkspace } from "./defaultWorkspace";
+import { createDefaultLetterTemplate } from "../word/letterTemplate";
 
 function isCatalog(value: unknown): value is Catalog {
   if (!value || typeof value !== "object") {
@@ -48,7 +49,11 @@ export function parseWorkspace(value: unknown): Workspace | null {
   if (!candidate.sections.every(isSection)) {
     return null;
   }
-  return candidate;
+  const letterTemplate =
+    typeof candidate.letterTemplate === "string"
+      ? candidate.letterTemplate
+      : createDefaultLetterTemplate(candidate.sections);
+  return { version: 1, sections: candidate.sections, letterTemplate };
 }
 
 export function loadWorkspace(): Workspace {

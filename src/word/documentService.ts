@@ -135,6 +135,38 @@ async function countInRoot(
   }
 }
 
+export function isBodyEmptyText(text: string): boolean {
+  return text.replace(/[\u0007\r\n\s]/g, "").length === 0;
+}
+
+export async function isDocumentBodyEmpty(): Promise<boolean> {
+  ensureWord();
+  let empty = true;
+
+  await Word.run(async (context) => {
+    const body = context.document.body;
+    body.load("text");
+    await context.sync();
+    empty = isBodyEmptyText(body.text ?? "");
+  });
+
+  return empty;
+}
+
+export async function insertHtmlIntoBody(
+  html: string,
+  location: "Replace" | "End" = "Replace"
+): Promise<void> {
+  ensureWord();
+
+  await Word.run(async (context) => {
+    const insertLocation =
+      location === "End" ? Word.InsertLocation.end : Word.InsertLocation.replace;
+    context.document.body.insertHtml(html, insertLocation);
+    await context.sync();
+  });
+}
+
 export async function insertAtCursor(text: string): Promise<void> {
   ensureWord();
   const value = text ?? "";
@@ -228,6 +260,11 @@ export async function populateLetter(
 
   for (const entry of entries) {
     if (!entry.value) {
+      if (entry.token === "{{PATIENT_OTHER}}" && foundTokens.has(entry.token)) {
+        const count = await replacePlaceholder(entry.token, "");
+        result.replaced.push({ token: entry.token, count });
+        continue;
+      }
       result.skippedEmpty.push(entry.token);
       continue;
     }

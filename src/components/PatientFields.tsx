@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Field, Input, makeStyles } from "@fluentui/react-components";
 import { PatientDetails } from "../state/useLetterState";
+import OtherField from "./OtherField";
 
 const useStyles = makeStyles({
   stack: {
@@ -13,6 +14,8 @@ const useStyles = makeStyles({
 export interface PatientFieldsProps {
   patient: PatientDetails;
   onChange: (patch: Partial<PatientDetails>) => void;
+  otherValue: string;
+  onOtherChange: (value: string) => void;
 }
 
 const PatientFields: React.FC<PatientFieldsProps> = (props) => {
@@ -61,6 +64,11 @@ const PatientFields: React.FC<PatientFieldsProps> = (props) => {
           placeholder="e.g. Consultant Physician"
         />
       </Field>
+      <OtherField
+        value={props.otherValue}
+        onChange={props.onOtherChange}
+        placeholder="Other patient details for this letter"
+      />
     </div>
   );
 };

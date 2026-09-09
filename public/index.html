@@ -41,31 +41,53 @@
     </p>
 
     <p class="note">
-      Skip Word’s <strong>Catalog Url</strong> box. It only accepts a SharePoint
-      <code>https://</code> catalogue, not this website.
+      Send this page to a colleague. They do not need GitHub, Node, or Word’s
+      <strong>Catalog Url</strong> box.
       <br /><br />
       <a href="Install-MedicalLetter.cmd"><strong>Download the installer (Install-MedicalLetter.cmd)</strong></a>
     </p>
 
     <h2>Install in Word (once)</h2>
+    <p>On Word for Windows:</p>
     <ol>
-      <li>Close Word.</li>
+      <li>Close Word completely (every window).</li>
       <li>
         Download
         <a href="Install-MedicalLetter.cmd">Install-MedicalLetter.cmd</a>
         and double-click it. If Windows warns you, choose <strong>More info → Run anyway</strong>.
       </li>
-      <li>Open Word. On the <strong>Home</strong> tab, choose <strong>Medical Letter</strong>.</li>
+      <li>Open Word. On the <strong>Home</strong> tab, click <strong>Medical Letter</strong>.</li>
     </ol>
     <p>
-      If the installer is blocked, open PowerShell and paste:
+      If the <code>.cmd</code> download is blocked, open <strong>PowerShell</strong> and paste this, then press Enter:
     </p>
     <p>
       <code>irm https://advcode118.github.io/medical-letter-word-add-in/Install-MedicalLetter.ps1 | iex</code>
     </p>
+    <p>Then close Word completely and open it again.</p>
+
+    <h3>Word in a browser (no installer)</h3>
+    <ol>
+      <li>
+        Download
+        <a href="manifest.xml">manifest.xml</a>
+        (right-click → Save link as).
+      </li>
+      <li>
+        Open a document in
+        <a href="https://word.cloud.microsoft">Word on the web</a>.
+      </li>
+      <li>
+        Choose <strong>Home → Add-ins → More Settings</strong> (sometimes labelled
+        <strong>Advanced</strong>).
+      </li>
+      <li>Choose <strong>Upload My Add-in</strong> and select the <code>manifest.xml</code> file.</li>
+      <li>On the <strong>Home</strong> tab, click <strong>Medical Letter</strong>.</li>
+    </ol>
     <p>
-      Then close Word completely and open it again. You need internet when the sidebar loads. Letter
-      content stays in Word on your computer.
+      Do not paste this website into Word’s <strong>Catalog Url</strong> box. That screen is only for a
+      SharePoint catalogue. You need internet when the sidebar loads. Letter content stays in Word on
+      your computer.
     </p>
 
     <h2>Write a letter</h2>

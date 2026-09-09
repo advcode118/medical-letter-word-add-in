@@ -18,6 +18,7 @@ if (-not (Test-Path $regPath)) {
 }
 
 New-ItemProperty -Path $regPath -Name $addinId -Value $manifestPath -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $regPath -Name "RefreshAddins" -Value 1 -PropertyType DWord -Force | Out-Null
 
 Write-Host ""
 Write-Host "Installed for this Windows account."

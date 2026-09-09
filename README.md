@@ -10,18 +10,15 @@ This is a **document-generation tool**, not a diagnostic system. The bundled cli
 
 ## Install in Word (for colleagues)
 
-Skip **Trusted Add-in Catalogs**. That screen only accepts a SharePoint `https://` catalog, not GitHub Pages and not a normal folder.
+Send them [this page](https://advcode118.github.io/medical-letter-word-add-in/). They do not need GitHub, Node, or Word’s **Catalog Url** box.
 
-Use the installer instead. It registers the add-in for your Windows account the same way a developer sideload works.
+### Word for Windows
 
-### Recommended: run the installer
+1. Close Word completely (every window).
+2. Download **[Install-MedicalLetter.cmd](https://advcode118.github.io/medical-letter-word-add-in/Install-MedicalLetter.cmd)** and double-click it. If Windows asks, choose **More info → Run anyway**.
+3. Open Word. On the **Home** tab, click **Medical Letter**.
 
-1. Close Word.
-2. Download **[Install-MedicalLetter.cmd](https://advcode118.github.io/medical-letter-word-add-in/Install-MedicalLetter.cmd)** and save it somewhere easy, such as Downloads.
-3. Double-click it. If Windows asks, choose **More info → Run anyway**.
-4. Open Word. On the **Home** tab, choose **Medical Letter**.
-
-If the `.cmd` file is blocked, open **PowerShell** and paste:
+If the `.cmd` download is blocked, open **PowerShell** and paste:
 
 ```powershell
 irm https://advcode118.github.io/medical-letter-word-add-in/Install-MedicalLetter.ps1 | iex
@@ -30,6 +27,16 @@ irm https://advcode118.github.io/medical-letter-word-add-in/Install-MedicalLette
 Then close Word completely and open it again.
 
 To remove it later, run **[Uninstall-MedicalLetter.ps1](https://advcode118.github.io/medical-letter-word-add-in/Uninstall-MedicalLetter.ps1)** the same way.
+
+### Word in a browser (no installer)
+
+1. Download **[manifest.xml](https://advcode118.github.io/medical-letter-word-add-in/manifest.xml)** (right-click → Save link as).
+2. Open a document in [Word on the web](https://word.cloud.microsoft).
+3. Choose **Home → Add-ins → More Settings** (sometimes labelled **Advanced**).
+4. Choose **Upload My Add-in** and select the downloaded `manifest.xml`.
+5. On the **Home** tab, click **Medical Letter**.
+
+Do not paste the GitHub Pages URL into Word’s **Catalog Url** box. That screen is only for a SharePoint catalogue.
 
 You need internet when the sidebar loads (the UI comes from GitHub Pages). Patient details stay in Word on your computer.
 
